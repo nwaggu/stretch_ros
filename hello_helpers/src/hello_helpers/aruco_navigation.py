@@ -20,6 +20,29 @@ from trajectory_msgs.msg import JointTrajectoryPoint
 import actionlib
 from move_base_msgs.msg import MoveBaseGoal, MoveBaseAction
 
+
+class Pose():
+    """
+    Stores and converts PoseStamped messages 
+    """
+    def __init__(self, **kwargs):
+        self.id = kwargs.get("id")
+        #Positional attributes
+        self.pos_x = kwargs.get("pos_x")
+        self.pos_y = kwargs.get("pos_y")
+        self.pos_z = kwargs.get("pos_z")
+        #Orientation attributes
+        self.ori_x = kwargs.get("ori_x")
+        self.ori_y = kwargs.get("ori_y")
+        self.ori_z = kwargs.get("ori_z")
+        self.ori_w = kwargs.get("ori_w")
+
+    def toJson
+    
+
+
+
+
 class ArucoNavigationNode(hm.HelloNode):
     def __init__(self):
 
@@ -40,12 +63,12 @@ class ArucoNavigationNode(hm.HelloNode):
     
     def pose_to_list(self, msg):
         """
-        Converts PoseStamped message into a list (to be later saved as dictionary entry)
+        Converts PoseStamped message into a Pose object (to be later saved as dictionary entry)
         input: pose - PostStamped msg
         """
-        return [msg.header.frame_id, msg.pose.position.x, msg.pose.position.y,
-              msg.pose.position.z, msg.pose.orentation.x, msg.pose.orientation.y, 
-              msg.pose.orientation.z, msg.pose.orientation.w]
+        return Pose(id = msg.header.frame_id, pos_x = msg.pose.position.x, pos_y =msg.pose.position.y,
+              pos_z = msg.pose.position.z, ori_x = msg.pose.orentation.x, ori_y = msg.pose.orientation.y, 
+              ori_z = msg.pose.orientation.z, ori_w = msg.pose.orientation.w)
     
 
     
