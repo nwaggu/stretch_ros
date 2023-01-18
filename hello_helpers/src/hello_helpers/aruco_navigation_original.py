@@ -87,14 +87,19 @@ class ArucoNavigationNode(hm.HelloNode):
             
             joint_name = command['joint']
             trajectory_goal.trajectory.joint_names = [joint_name]
+            #Based on set value
             if 'inc' in command:
                 inc = command['inc']
                 new_value = inc
+            #Based on change in value 
             elif 'delta' in command:
+                #Check index and get value from position list
                 joint_index = joint_state.name.index(joint_name)
                 joint_value = joint_state.position[joint_index]
                 delta = command['delta']
+                #Add delta to joint_value
                 new_value = joint_value + delta
+            #Update location you wanna be at and move
             point.positions = [new_value]
             trajectory_goal.trajectory.points = [point]
             trajectory_goal.trajectory.header.stamp = rospy.Time.now()
@@ -162,28 +167,29 @@ class ArucoNavigationNode(hm.HelloNode):
         return True
 
     
-    def save_pose(self, pose_id, frame_id):
+    def save_pose(self, pose_name, aruco_name):
         '''
         Looks for the requested frame (the name of an aruco tag or "map") then returns the translation and rotation found by the tf_listener in find_tag as a pose
         in the requested frame.
         '''
 
-        if self.find_tag(frame_id):
+        if self.find_tag(aruco_name):
         
-            pose = PoseStamped()
-            pose.header.frame_id = frame_id
+            #Create new PoseStamped msg
+            msg = PoseStamped()
+            msg.header.frame_id = aruco_name
             
-            pose.pose.position.x = self.translation[0]
-            pose.pose.position.y = self.translation[1]
-            pose.pose.position.z = self.translation[2]
+            msg.pose.position.x = self.translation[0]
+            msg.pose.position.y = self.translation[1]
+            msg.pose.position.z = self.translation[2]
 
-            pose.pose.orientation.x = self.rotation[0]
-            pose.pose.orientation.y = self.rotation[1]
-            pose.pose.orientation.z = self.rotation[2]
-            pose.pose.orientation.w = self.rotation[3]
+            msg.pose.orientation.x = self.rotation[0]
+            msg.pose.orientation.y = self.rotation[1]
+            msg.pose.orientation.z = self.rotation[2]
+            msg.pose.orientation.w = self.rotation[3]
 
             saved_file = open(self.file_path + "/saved_poses.json","w")
-            self.pose_dict[pose_id.lower()] = self.pose_to_list(pose)
+            self.pose_dict[pose_name.lower()] = (msg)
             json.dump(self.pose_dict,saved_file)
             saved_file.close()
 
